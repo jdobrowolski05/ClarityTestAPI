@@ -22,21 +22,26 @@ namespace ClarityTestAPI.Controllers
 
         [DisableCors]
         [HttpPost(Name = "SendEmail")]
-        public async Task<EmailResult> Post(Email email)
+        public EmailResult Post(Email email)
         {
-            ClarityEmailer.Emailer emailer = new (
+            ClarityEmailer.Emailer emailer = new(
                 _configuration.GetValue<string>("Smtp:SmtpServer") ?? "",
                 _configuration.GetValue<int>("Smtp:SmtpPort"),
                 _configuration.GetValue<string>("Smtp:SmtpCredentials:Username") ?? "",
                 _configuration.GetValue<string>("Smtp:SmtpCredentials:Password") ?? "",
                 _configuration.GetSection("LogPath").Value ?? ""
             );
-            // Awaiting will cause hang on the response time via API, kind of depends
-            // how long the retry delay is, how much info the API needs to send back, etc.
-            bool success = await emailer.SendEmailAsync(email.From, email.To, email.Subject, email.Body);
-            return new EmailResult() { 
-                Success = success
+            // Discarding here means we can instantly return the response
+            _ = emailer.SendEmailAsync(email.From, email.To, email.Subject, email.Body);
+            return new EmailResult()
+            {
+                Success = true
             };
+            // As a side note, I have seen some issues with things like AWS Lambda where a Promise
+            // was not properly resolved because it wasn't returned to the original function
+            // and the main thread exited, causing the whole execution to stop. I imagine some
+            // cloud based API setups may still require passing back the task so the server host doesn't
+            // end the whole call early
         }
     }
 }
