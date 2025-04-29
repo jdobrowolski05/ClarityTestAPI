@@ -1,0 +1,6 @@
+@ClarityTestAPI_HostAddress = http://localhost:5033
+
+POST {{ClarityTestAPI_HostAddress}}/sendemail/
+Accept: application/json
+
+###

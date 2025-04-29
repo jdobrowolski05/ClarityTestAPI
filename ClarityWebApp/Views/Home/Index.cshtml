@@ -1,0 +1,82 @@
+﻿@model ClarityWebApp.Models.EmailViewModel
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+@section Scripts
+{
+    <script type="text/javascript">
+        $(function () {
+            $("#btnSend").click(function () {
+                var email = {
+                    To:  $("#To").val(),
+                    From: $("#From").val(),
+                    Subject: $("#Subject").val(),
+                    Body: $("#Body").val()
+                };
+                $.ajax({
+                    type: "POST",
+                    url: 'https://localhost:7018/SendEmail',
+                    data: JSON.stringify(email),
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                    success: function (r) {
+                        if(r.success) {
+                            alert("Sent Successfully");
+                        } else {
+                            alert("Send Failed");
+                        }
+                    },
+                    error: function () {
+                        alert("Error from server");
+                    }
+                });
+                return false;
+            });
+        });
+    </script>
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <fieldset>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.To)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.To)
+            @Html.ValidationMessageFor(model => model.To)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.From)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.From)
+            @Html.ValidationMessageFor(model => model.From)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Subject)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.Subject)
+            @Html.ValidationMessageFor(model => model.Subject)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Body)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.Body)
+            @Html.ValidationMessageFor(model => model.Body)
+        </div>
+
+        <p>
+            <input type="button" id="btnSend" value="Send Email" />
+        </p>
+    </fieldset>
+
+</div>
